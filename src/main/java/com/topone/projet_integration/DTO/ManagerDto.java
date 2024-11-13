@@ -9,6 +9,6 @@ public class ManagerDto {
     public String email;
     public long RIB;
     public String password;
-    public String role_employer;
+
   public int grade;
 }

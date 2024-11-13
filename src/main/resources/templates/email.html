@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; background-color: #ffffff; padding: 20px; margin: 20px auto; border-radius: 8px; }
+        .header { font-size: 18px; color: #333; font-weight: bold; text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd; }
+        .content { text-align: center; color: #555; font-size: 16px; margin-top: 20px; }
+        .code { font-size: 24px; font-weight: bold; color: #333; padding: 10px; background-color: #f9f9f9; border-radius: 5px; display: inline-block; }
+        .footer { font-size: 14px; color: #777; text-align: center; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">Vérification de votre adresse email</div>
+            <div class="content">
+                <p>Merci de vous inscrire.<p class="name" th:text="${name}"></p> Veuillez utiliser le code suivant pour vérifier votre adresse email :</p>
+                <div class="code" th:text="${code}"></div>
+                <p>Entrez ce code dans le formulaire pour terminer votre inscription.</p>
+            </div>
+            <div class="footer">Merci, L'équipe Support</div>
+    </div>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.topone.projet_integration.Controllers;
 
 import com.topone.projet_integration.DTO.ManagerDto;
 import com.topone.projet_integration.Services.ManagerService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ public class ManagerController {
  @Autowired
     ManagerService managerService;
     @PostMapping("/add")
-    public String add(@RequestBody ManagerDto managerDto){
+    public String add(@RequestBody ManagerDto managerDto) throws MessagingException {
         return managerService.add(managerDto);
     }
 }
