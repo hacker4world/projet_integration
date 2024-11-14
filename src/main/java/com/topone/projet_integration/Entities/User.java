@@ -1,35 +1,40 @@
 package com.topone.projet_integration.Entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
-
 @NoArgsConstructor
+@Getter
+@Setter
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role")
 public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    public int id;
-    public String name;
-    public String lastName;
-    public  int age;
-    public String adress;
-    public String image;
-    public String email;
-    public long RIB;
-    public String password;
+    private int id;
+    private String name;
+    private String lastName;
+    private int age;
+    private String adress;
+    private long RIB;
+    private String email;
+    private String password;
 
-    public User(String name,  String lastName, int age, String adress, String image, String email, long RIB, String password) {
+    @Lob
+    private byte[] image;
+
+    public User(String name,  String lastName, int age, String adress, String email, long RIB, String password) {
         this.name = name;
         this.lastName = lastName;
         this.age = age;
         this.adress = adress;
-        this.image = image;
         this.email = email;
         this.RIB = RIB;
         this.password = password;
     }
+
 }

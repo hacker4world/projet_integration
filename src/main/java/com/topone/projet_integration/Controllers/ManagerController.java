@@ -1,21 +1,41 @@
 package com.topone.projet_integration.Controllers;
 
-import com.topone.projet_integration.DTO.ManagerDto;
+import com.topone.projet_integration.DTO.ManagerSignupDto;
+import com.topone.projet_integration.DTO.VerifyManagerDto;
+import com.topone.projet_integration.Services.ImageService;
 import com.topone.projet_integration.Services.ManagerService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/Manager")
 public class ManagerController {
- @Autowired
-    ManagerService managerService;
-    @PostMapping("/add")
-    public String add(@RequestBody ManagerDto managerDto) throws MessagingException {
-        return managerService.add(managerDto);
+
+    private final ManagerService managerService;
+    private final ImageService imageService;
+
+    @Autowired
+    public ManagerController(ManagerService managerService, ImageService imageService) {
+        this.managerService = managerService;
+        this.imageService = imageService;
+    }
+
+    @PostMapping("/signup")
+    public String add(@RequestBody ManagerSignupDto managerSignupDto) throws MessagingException {
+        return managerService.add(managerSignupDto);
+    }
+
+    @PostMapping("/verify-email")
+    public String verifyEmail(@RequestBody VerifyManagerDto verificationData) {
+        return managerService.verifyEmail(verificationData);
+    }
+
+    @PostMapping("/upload-image/{managerId}")
+    public String uploadImage(@RequestPart("image") MultipartFile imageFile, @PathVariable("managerId") int managerId) throws IOException {
+        return imageService.uploadImageForManager(imageFile, managerId);
     }
 }
