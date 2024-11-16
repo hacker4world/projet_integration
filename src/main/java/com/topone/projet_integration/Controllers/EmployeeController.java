@@ -1,7 +1,7 @@
 package com.topone.projet_integration.Controllers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.topone.projet_integration.DTO.EmployeeSignupDto;
 import com.topone.projet_integration.DTO.LoginDto;
 import com.topone.projet_integration.DTO.VerifyEmployeeDto;
@@ -17,11 +17,16 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/Employee")
 public class EmployeeController {
-     @Autowired
-     private EmployeeService employeeService;
+     private final EmployeeService employeeService;
 
-     @Autowired
-     private ImageService imageService;
+     private final ImageService imageService;
+
+      @Autowired
+     public EmployeeController(EmployeeService employeeService, ImageService imageService) {
+         this.employeeService = employeeService;
+         this.imageService = imageService;
+     }
+
 
     @PostMapping("/signup")
     public String signup(@RequestBody EmployeeSignupDto employeeSignupDto) throws MessagingException {
@@ -29,7 +34,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/verify-email")
-    public String verif(@RequestBody VerifyEmployeeDto v)
+    public String verifyEmail(@RequestBody VerifyEmployeeDto v)
     {
         return employeeService.verifyEmail(v);
     }

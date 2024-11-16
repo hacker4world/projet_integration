@@ -122,7 +122,7 @@ public class EmployeeService {
 
     public String generateRandomVerificationCode() {
         Random rand = new Random(); // Création de l'objet Random
-        int aleatoire = rand.nextInt(10000); //generer code entre
+        int aleatoire = 10000 + rand.nextInt(90000);
         return String.valueOf(aleatoire);
     }
 
