@@ -170,14 +170,17 @@ public class EmployeeService {
 
         Employee e = employee.get();
 
-        if (e.isVerified_email()) return ResponseEntity.badRequest().body(
-                new ApiResponseDto<>(400,
-                        ResponseMessage.EMAIL_ALREADY_VERIFIED.toString(),
-                        "Email is already verified")
-                );
+        if (e.isVerified_email()) {
+            System.out.println("email is verified");
+            return ResponseEntity.badRequest().body(
+                    new ApiResponseDto<>(400,
+                            ResponseMessage.EMAIL_ALREADY_VERIFIED.toString(),
+                            "Email is already verified")
+                    );
+        }
 
-        if (!e.getEmail_verification_code().equals(v.getCode())) return ResponseEntity.badRequest().body(
-                new ApiResponseDto<>(400,
+        if (!e.getEmail_verification_code().equals(v.getCode())) return ResponseEntity.status(401).body(
+                new ApiResponseDto<>(401,
                         ResponseMessage.INVALID_VERIFICATION_CODE.toString(),
                         "Verification code is incorrect")
                 );
