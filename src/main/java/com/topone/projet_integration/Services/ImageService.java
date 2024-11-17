@@ -1,10 +1,13 @@
 package com.topone.projet_integration.Services;
 
+import com.topone.projet_integration.DTO.ApiResponseDto;
 import com.topone.projet_integration.Entities.Employee;
 import com.topone.projet_integration.Entities.Manager;
 import com.topone.projet_integration.Repository.EmployeeRepository;
 import com.topone.projet_integration.Repository.ManagerRepository;
+import com.topone.projet_integration.enums.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,11 +27,15 @@ public class ImageService {
     }
 
 
-    public String uploadImageForEmployee(MultipartFile imageFile, int employeeId) throws IOException {
+    public ResponseEntity<ApiResponseDto<String>> uploadImageForEmployee(MultipartFile imageFile, int employeeId) throws IOException {
 
         Optional<Employee> employee = employeeRepository.findById(employeeId);
 
-        if (employee.isEmpty()) return "Could not find any employee with given id";
+        if (employee.isEmpty()) return ResponseEntity.status(404).body(
+                new ApiResponseDto<>(404,
+                        ResponseMessage.ACCOUNT_NOT_FOUND.toString(),
+                        "Could not find employee with id " + employeeId)
+                );
 
         byte[] imageBytes = imageFile.getBytes();
 
@@ -38,14 +45,22 @@ public class ImageService {
 
         employeeRepository.save(e);
 
-        return "Employee image has been saved";
+        return ResponseEntity
+                .ok(new ApiResponseDto<String>(200,
+                        ResponseMessage.SUCCESS.toString(),
+                        "Employee image has been uploaded successfully"
+                ));
 
     }
 
-    public String uploadImageForManager(MultipartFile imageFile, int managerId) throws IOException {
+    public ResponseEntity<ApiResponseDto<String>> uploadImageForManager(MultipartFile imageFile, int managerId) throws IOException {
         Optional<Manager> manager = managerRepository.findById(managerId);
 
-        if (manager.isEmpty()) return "Could not find any manager with given id";
+        if (manager.isEmpty()) return ResponseEntity.status(404).body(
+                new ApiResponseDto<>(404,
+                        ResponseMessage.ACCOUNT_NOT_FOUND.toString(),
+                        "Could not find manager with id " + manager)
+                );
 
         byte[] imageBytes = imageFile.getBytes();
 
@@ -55,7 +70,11 @@ public class ImageService {
 
         managerRepository.save(m);
 
-        return "Manager image has been saved";
+        return ResponseEntity
+                .ok(new ApiResponseDto<String>(200,
+                        ResponseMessage.SUCCESS.toString(),
+                        "Employee image has been uploaded successfully"
+                ));
     }
 
 

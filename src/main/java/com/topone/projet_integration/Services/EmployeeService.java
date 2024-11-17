@@ -1,15 +1,20 @@
 package com.topone.projet_integration.Services;
 
+import com.topone.projet_integration.DTO.ApiResponseDto;
 import com.topone.projet_integration.DTO.EmployeeSignupDto;
 import com.topone.projet_integration.DTO.VerifyEmployeeDto;
+import com.topone.projet_integration.Entities.Admin;
 import com.topone.projet_integration.Entities.Employee;
 import com.topone.projet_integration.Entities.Manager;
 import com.topone.projet_integration.Entities.User;
 import com.topone.projet_integration.Repository.EmployeeRepository;
 import com.topone.projet_integration.Repository.ManagerRepository;
 import com.topone.projet_integration.Repository.UserRepository;
+import com.topone.projet_integration.enums.ResponseMessage;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -31,12 +36,16 @@ public class EmployeeService {
         this.userRepository = userRepository;
     }
 
-    public String add(EmployeeSignupDto employeeSignupDto) throws MessagingException {
+    public ResponseEntity<ApiResponseDto<String>> add(EmployeeSignupDto employeeSignupDto) throws MessagingException {
         Optional<Employee> existingEmployee = employeeRepository.findByEmail(employeeSignupDto.getEmail());
         Optional<Manager> existingManager = managerRepository.findByEmail(employeeSignupDto.getEmail());
 
         if (existingEmployee.isPresent() || existingManager.isPresent()) {
-            return "employee existed";
+            return ResponseEntity.
+                    status(400).
+                    body(new ApiResponseDto<>(400, ResponseMessage.EMAIL_EXISTS.toString(),
+                            "Email address already in use!"
+                    ));
         }
 
         String verificationCode = generateRandomVerificationCode();
@@ -60,72 +69,133 @@ public class EmployeeService {
                 verificationCode
         );
 
-        return "Employee added, verification email sent";
+        return ResponseEntity
+                .ok(new ApiResponseDto<String>(200,
+                        ResponseMessage.SUCCESS.toString(),
+                        "Your account has been created, an email with verification code has been sent to you"
+                ));
     }
 
-    public String login(String email, String password) throws MessagingException {
+    public ResponseEntity<ApiResponseDto<String>> login(String email, String password) throws MessagingException {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty() || !user.get().getPassword().equals(password)) {
-            return "username or password incorrect";
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponseDto<String>(401,
+                            ResponseMessage.INVALID_CREDENTIALS.toString(),
+                            "Username or password incorrect"
+                    ));
         }
 
         User userData = user.get();
 
-        if (user.get() instanceof Employee) {
+        if (userData instanceof Admin) return ResponseEntity
+                .ok(new ApiResponseDto<String>(200,
+                        ResponseMessage.SUCCESS.toString(),
+                        "Successfully logged in as an admin"
+                ));
+
+        else if (userData instanceof Employee) {
             Employee employee = employeeRepository.findById(userData.getId()).get();
             if (!employee.isVerified_email()) {
                 String code = generateRandomVerificationCode();
                 emailService.sendVerificationEmail(employee.getEmail(), employee.getName(), code);
                 employee.setEmail_verification_code(code);
                 employeeRepository.save(employee);
-                return "You have not verified your email yet, a new code has been sent to your email";
+                return ResponseEntity
+                        .ok(new ApiResponseDto<String>(200,
+                                ResponseMessage.EMAIL_NOT_VERIFIED.toString(),
+                                "Email is not yet verified, a new code has been sent to you"
+                        ));
             }
-            if (employee.getAccount_accepted() == -1) return "Your account request has been rejected";
-            if (employee.getAccount_accepted() == 0) return "Your account request is still pending";
-            return "You are logged in as employee";
+            if (employee.getAccount_accepted() == -1) return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.ACCOUNT_REJECTED.toString(),
+                            "Your account has been rejected"
+                    ));
+            if (employee.getAccount_accepted() == 0) return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.ACCOUNT_PENDING.toString(),
+                            "Your account is still awaiting approval"
+                    ));
+
+            return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.SUCCESS.toString(),
+                            "Successfully logged in as an employee"
+                    ));
         }
 
-        else if (user.get() instanceof Manager) {
+        else {
             Manager manager = managerRepository.findById(userData.getId()).get();
             if (!manager.isVerified_email()) {
                 String code = generateRandomVerificationCode();
                 emailService.sendVerificationEmail(manager.getEmail(), manager.getName(), code);
                 manager.setEmail_verification_code(code);
                 managerRepository.save(manager);
-                return "You have not verified your email yet, a new code has been sent to your email";
+                return ResponseEntity
+                        .ok(new ApiResponseDto<String>(200,
+                                ResponseMessage.EMAIL_NOT_VERIFIED.toString(),
+                                "Email is not yet verified, a new code has been sent to you"
+                        ));
             }
-            if (manager.getAccount_accepted() == -1) return "Your account request has been rejected";
-            if (manager.getAccount_accepted() == 0) return "Your account request is still pending";
-            return "You are logged in as manager";
+            if (manager.getAccount_accepted() == -1) return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.ACCOUNT_REJECTED.toString(),
+                            "Your account has been rejected"
+                    ));
+            if (manager.getAccount_accepted() == 0) return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.ACCOUNT_PENDING.toString(),
+                            "Your account is still awaiting approval"
+                    ));
+            return ResponseEntity
+                    .ok(new ApiResponseDto<String>(200,
+                            ResponseMessage.SUCCESS.toString(),
+                            "Successfully logged in as a manager"
+                    ));
         }
-        else return "You are logged in as admin";
+
 
     }
 
-
-    public String verifyEmail(VerifyEmployeeDto v) {
+    public ResponseEntity<ApiResponseDto<String>> verifyEmail(VerifyEmployeeDto v) {
         Optional<Employee> employee = employeeRepository.findByEmail(v.getEmail());
 
-        if (employee.isEmpty()) return "Email was not found";
+        if (employee.isEmpty()) return ResponseEntity.status(404).body(
+                new ApiResponseDto<>(404,
+                        ResponseMessage.ACCOUNT_NOT_FOUND.toString(),
+                        "Could not find any account with given email address")
+                );
 
         Employee e = employee.get();
 
-        if (e.isVerified_email()) return "Email is already verified";
+        if (e.isVerified_email()) return ResponseEntity.badRequest().body(
+                new ApiResponseDto<>(400,
+                        ResponseMessage.EMAIL_ALREADY_VERIFIED.toString(),
+                        "Email is already verified")
+                );
 
-        if (!e.getEmail_verification_code().equals(v.getCode())) return "Incorrect verification code";
+        if (!e.getEmail_verification_code().equals(v.getCode())) return ResponseEntity.badRequest().body(
+                new ApiResponseDto<>(400,
+                        ResponseMessage.INVALID_VERIFICATION_CODE.toString(),
+                        "Verification code is incorrect")
+                );
 
         e.setVerified_email(true);
         employeeRepository.save(e);
-        return "success";
+        return ResponseEntity.ok(
+                new ApiResponseDto<>(200,
+                        ResponseMessage.SUCCESS.toString(),
+                        "Email verification success")
+                );
 
     }
 
     public String generateRandomVerificationCode() {
-        Random rand = new Random(); // Création de l'objet Random
-        int aleatoire = 10000 + rand.nextInt(90000);
-        return String.valueOf(aleatoire);
+        Random rand = new Random();
+        int randomCode = 10000 + rand.nextInt(90000);
+        return String.valueOf(randomCode);
     }
 
-
 }
-
