@@ -1,10 +1,10 @@
 package com.topone.projet_integration.security;
 
-import com.topone.projet_integration.Entities.Admin;
-import com.topone.projet_integration.Entities.Employee;
-import com.topone.projet_integration.Entities.Manager;
-import com.topone.projet_integration.Entities.User;
-import com.topone.projet_integration.Repository.UserRepository;
+import com.topone.projet_integration.entities.Admin;
+import com.topone.projet_integration.entities.Employee;
+import com.topone.projet_integration.entities.Manager;
+import com.topone.projet_integration.entities.User;
+import com.topone.projet_integration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
