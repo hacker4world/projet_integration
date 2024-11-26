@@ -10,12 +10,11 @@ public class SignupDto {
     private String password;
     private String role_employer;
     private int grade;
+    private String accountType;
 
     public String getAccountType() {
         return accountType;
     }
-
-    private String accountType;
 
     public String getName() {
         return name;

@@ -45,6 +45,7 @@ public class EmailService {
 
             // send the email
             mailSender.send(message);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MessagingException("Failed to send verification email", e);
@@ -75,6 +76,7 @@ public class EmailService {
 
             // send the email
             mailSender.send(message);
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new MessagingException("Failed to send verification email", e);

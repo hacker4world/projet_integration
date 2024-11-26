@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class AuthenticationService {
 
         // if an account with given email exists, return a 400 error response
         if (user.isPresent()) return ResponseEntity.status(400).body(
-                new ApiResponseDto<>(400, ResponseMessage.SUCCESS.toString(), "Email address already used")
+                new ApiResponseDto<>(400, ResponseMessage.EMAIL_EXISTS.toString(), "Email address already used")
         );
 
         // encode the password before inserting in the database
@@ -79,8 +80,10 @@ public class AuthenticationService {
                     signupDto.getGrade(),
                     false, verificationCode,
                     0);
+
             // if account type is invalid, send 400 error
-        } else return ResponseEntity.status(400).body(
+        }
+        else return ResponseEntity.status(400).body(
                 new ApiResponseDto<>(400, ResponseMessage.INVALID_CREDENTIALS.toString(), "Invalid account type")
         );
 
@@ -92,16 +95,16 @@ public class AuthenticationService {
 
         // return success response
         return ResponseEntity.status(200).body(
-                new ApiResponseDto<>(200, ResponseMessage.SUCCESS.toString(), "Account created successfuly")
+                new ApiResponseDto<>(200, ResponseMessage.SUCCESS.toString(), "Account created successfully")
         );
 
     }
 
-    public ResponseEntity<ApiResponseDto<String>> login(LoginDto loginDto) {
+    public ResponseEntity<LoginResponseDto> login(LoginDto loginDto) {
 
         try {
             // try logging in with given credentials
-            authenticationProvider.authenticate(
+            Authentication authentication = authenticationProvider.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
 
@@ -110,11 +113,13 @@ public class AuthenticationService {
 
             // if the user is admin, generate token and send success message
             if (user instanceof Admin) {
+
                 String token = jwtUtil.createToken(user.getEmail());
 
                 return ResponseEntity.status(200).body(
-                        new ApiResponseDto<>(200, ResponseMessage.SUCCESS.toString(), token)
-                );
+                        new LoginResponseDto(
+                                token, "Login successful", user.getId(), "ROLE_ADMIN"
+                        ));
             }
 
             if (!user.isVerified_email()) {
@@ -131,26 +136,29 @@ public class AuthenticationService {
 
                 // return a 400 response to say email is not verified yet
                 return ResponseEntity.status(400).body(
-                        new ApiResponseDto<>(400, ResponseMessage.EMAIL_NOT_VERIFIED.toString(), "You did not verify your email yet, a new verification email has been sent")
+                        new LoginResponseDto("You did not verify your email yet, a new verification email has been sent")
                 );
 
             } else {
 
                 // if account is rejected, return a 400 response saying that account is rejected
                 if (user.getAccountAccepted() == -1) return ResponseEntity.status(400).body(
-                        new ApiResponseDto<>(400, ResponseMessage.ACCOUNT_REJECTED.toString(), "Your account has been rejected")
+                        new LoginResponseDto("Your account has been rejected")
                 );
                 // if account is not accepted yet, return a 400 response saying that account is pending validation
                 else if (user.getAccountAccepted() == 0) return ResponseEntity.status(400).body(
-                        new ApiResponseDto<>(400, ResponseMessage.ACCOUNT_PENDING.toString(), "Your account is still awaiting approval")
+                        new LoginResponseDto("Your account is still awaiting approval")
                 );
                 else {
                     // generate jwt for the user
                     String token = jwtUtil.createToken(user.getEmail());
 
+                    // get the role of the logged-in user
+                    String role = authentication.getAuthorities().iterator().next().getAuthority();
+
                     // return a success response with the token attached
                     return ResponseEntity.status(200).body(
-                            new ApiResponseDto<>(200, ResponseMessage.SUCCESS.toString(), token)
+                            new LoginResponseDto(token, "Login successful", user.getId(), role)
                     );
                 }
             }
@@ -158,7 +166,7 @@ public class AuthenticationService {
         } catch (Exception e) {
             // when the credentials are invalid, send a 401 error
             return ResponseEntity.status(401).body(
-                    new ApiResponseDto<>(401, ResponseMessage.INVALID_CREDENTIALS.toString(), "Invalid email or password")
+                    new LoginResponseDto("Invalid email or password")
             );
         }
 

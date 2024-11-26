@@ -32,12 +32,12 @@ public class AccountRequestsController {
     }
 
     @PostMapping("handle-employee")
-    public ResponseEntity<ApiResponseDto<String>> acceptEmployeeRequest(@RequestBody AccountRequestDto accountRequestDto) {
+    public ResponseEntity<ApiResponseDto<String>> handleEmployeeRequest(@RequestBody AccountRequestDto accountRequestDto) {
         return accountRequestsService.handleEmployeeRequest(accountRequestDto);
     }
 
     @PostMapping("handle-manager")
-    public ResponseEntity<ApiResponseDto<String>> refuseEmployeeRequest(@RequestBody AccountRequestDto accountRequestDto) {
+    public ResponseEntity<ApiResponseDto<String>> handleManagerRequest(@RequestBody AccountRequestDto accountRequestDto) {
         return accountRequestsService.handleManagerRequest(accountRequestDto);
     }
 

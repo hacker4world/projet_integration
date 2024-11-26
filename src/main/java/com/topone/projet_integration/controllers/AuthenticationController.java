@@ -23,7 +23,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponseDto<String>> login(@RequestBody LoginDto loginDto) throws MessagingException {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto loginDto) throws MessagingException {
         return authenticationService.login(loginDto);
     }
 

@@ -1,6 +1,7 @@
 package com.topone.projet_integration.dto;
 
 public class UnacceptedManagersResponseDto {
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -11,7 +12,7 @@ public class UnacceptedManagersResponseDto {
     private boolean emailVerified;
 
 
-    public UnacceptedManagersResponseDto(String firstName, String lastName, String email, int age, int grade, String adress, long rib, boolean emailVerified) {
+    public UnacceptedManagersResponseDto(int id, String firstName, String lastName, String email, int age, int grade, String adress, long rib, boolean emailVerified) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -20,6 +21,15 @@ public class UnacceptedManagersResponseDto {
         this.adress = adress;
         this.rib = rib;
         this.emailVerified = emailVerified;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstName() {

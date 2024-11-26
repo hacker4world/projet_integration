@@ -40,6 +40,7 @@ public class AccountRequestsService {
         // looping through the pending employees list and filling the unacceptedEmployeesResponseDto list
         for (Employee employee : employees) {
             unacceptedEmployeesResponseDto.add(new UnacceptedEmployeesResponseDto(
+                    employee.getId(),
                     employee.getName(), employee.getLastName(), employee.getEmail(), employee.getAge(), employee.getRole_employer(),
                     employee.getAdress(),  employee.getRIB(), employee.isVerified_email()
             ));
@@ -61,6 +62,7 @@ public class AccountRequestsService {
         // looping through the pending managers list and filling the unacceptedManagersResponseDto list
         for (Manager manager : managers) {
             unacceptedManagersResponseDto.add(new UnacceptedManagersResponseDto(
+                    manager.getId(),
                     manager.getName(), manager.getLastName(), manager.getEmail(), manager.getAge(), manager.getGrade(),
                     manager.getAdress(),  manager.getRIB(), manager.isVerified_email()
             ));
