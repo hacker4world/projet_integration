@@ -5,11 +5,12 @@ public class ProfileResponseDto {
     private String lastName;
     private String email;
     private int age;
+    private String address;
     private String employeeRole;
     private int managerGrade;
     private double adminExperience;
 
-    public ProfileResponseDto(String firstName, String lastName, String email, int age, String employeeRole, int managerGrade, double adminExperience) {
+    public ProfileResponseDto(String firstName, String lastName, String email, int age, String employeeRole, int managerGrade, double adminExperience, String address) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -17,6 +18,7 @@ public class ProfileResponseDto {
         this.employeeRole = employeeRole;
         this.managerGrade = managerGrade;
         this.adminExperience = adminExperience;
+        this.address = address;
     }
 
     public String getFirstName() {
@@ -43,4 +45,11 @@ public class ProfileResponseDto {
         return managerGrade;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public double getAdminExperience() {
+        return adminExperience;
+    }
 }

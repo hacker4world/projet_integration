@@ -46,18 +46,18 @@ public class ProfileService {
        // if account is an employee, create the profile data object with employee specific informations
        if (account instanceof Employee employee) {
            profileData = new ProfileResponseDto(
-                account.getName(), account.getLastName(), account.getEmail(), account.getAge(), employee.getRole_employer(), 0, 0
+                account.getName(), account.getLastName(), account.getEmail(), account.getAge(), employee.getRole_employer(), 0, 0, account.getAdress()
            );
            // if account is a manager create the profile data object with manager specific informations
        } else if (account instanceof Manager manager) {
            profileData = new ProfileResponseDto(
-                   account.getName(), account.getLastName(), account.getEmail(), account.getAge(), "", manager.getGrade(), 0
+                   account.getName(), account.getLastName(), account.getEmail(), account.getAge(), "", manager.getGrade(), 0, account.getAdress()
            );
            // if account is an admin, create the profile data object with admin specific informations
        } else {
            Admin admin = (Admin) account;
            profileData = new ProfileResponseDto(
-                   account.getName(), account.getLastName(), account.getEmail(), account.getAge(), "", 0,  (double) admin.getExperience()
+                   account.getName(), account.getLastName(), account.getEmail(), account.getAge(), "", 0,  (double) admin.getExperience(), account.getAdress()
            );
        }
 
