@@ -13,6 +13,7 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
 
     Optional<Employee> findByEmail(String email);
 
+
     @Query("SELECT e FROM Employee e WHERE e.accountAccepted = 0")
     List<Employee> findPendingEmployeeRequests();
 

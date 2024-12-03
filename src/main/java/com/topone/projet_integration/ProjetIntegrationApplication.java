@@ -17,7 +17,7 @@ public class ProjetIntegrationApplication {
     }
 
 
-//    @Bean
+    //@Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx, PasswordEncoder passwordEncoder, AdminRepository adminRepository) {
         return args -> {
 
