@@ -6,9 +6,11 @@ import com.topone.projet_integration.dto.UnacceptedEmployeesResponseDto;
 import com.topone.projet_integration.dto.UnacceptedManagersResponseDto;
 import com.topone.projet_integration.entities.Employee;
 import com.topone.projet_integration.entities.Manager;
+import com.topone.projet_integration.entities.User;
 import com.topone.projet_integration.repositories.EmployeeRepository;
 import com.topone.projet_integration.repositories.ManagerRepository;
 import com.topone.projet_integration.enums.ResponseMessage;
+import com.topone.projet_integration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,15 @@ public class AccountRequestsService {
 
     private final EmployeeRepository employeeRepository;
     private final ManagerRepository managerRepository;
+    private final  UserRepository userRepository;
 
     @Autowired
-    public AccountRequestsService(EmployeeRepository employeeRepository, ManagerRepository managerRepository) {
+    public AccountRequestsService(EmployeeRepository employeeRepository, ManagerRepository managerRepository, UserRepository userRepository) {
         this.employeeRepository = employeeRepository;
         this.managerRepository = managerRepository;
+        this.userRepository = userRepository;
     }
+
 
     public List<UnacceptedEmployeesResponseDto> getPendingEmployees() {
 
@@ -149,5 +154,9 @@ public class AccountRequestsService {
     private Optional<Manager> getManagerById(int id) {
         return managerRepository.findById(id);
     }
+public List<User> getAllUserAccepted()
+{
+   return  userRepository.findAcceptedUserRequests();
 
+}
 }
